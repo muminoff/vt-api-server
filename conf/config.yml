@@ -1,0 +1,14 @@
+---
+  host: "127.0.0.1"
+  port: 3000
+  domain: "api.drivers.uz"
+  log_file: "logs/vt.log"
+  log_level: "debug" #info, warn, error
+  gcm_api_key: "AIzaSyBBaV6nqZtFaQnKzRNK9i_g-jcBU77ji00"
+  postgresql: 
+    host: "vt-db.cgsrhj75wyom.us-west-2.rds.amazonaws.com"
+    port: 5432
+    user: "vt"
+    pass: "vtvtvtvt"
+    name: "vt"
+    pool_size: 200
