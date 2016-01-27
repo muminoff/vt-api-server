@@ -42,16 +42,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // api import
-var getAllTopics = require('./api/alltopics');
 var signupUser = require('./api/signup');
 var checkUsername = require('./api/checkusername');
-var signinUser = require('./api/signin');
-var userTopics = require('./api/usertopics');
 var roomList = require('./api/roomlist');
 var topicList = require('./api/topiclist');
 var topicMembers = require('./api/topicmembers');
 var topicCreate = require('./api/topiccreate');
-var topicUnsubscribe = require('./api/topicunsubscribe');
 var messageHistory = require('./api/messagehistory');
 var messageHistoryUp = require('./api/messagehistoryup');
 var messageCount = require('./api/messagecount');

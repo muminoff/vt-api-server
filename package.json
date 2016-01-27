@@ -1,35 +1,15 @@
 {
-  "name": "vt-chat-server",
+  "name": "vt-api-server",
   "version": "0.0.1",
-  "description": "Voditeli Tashkenta Chat Server",
+  "description": "Voditeli Tashkenta API Server",
   "main": "server.js",
-  "author": "DriversUz",
+  "author": "Sardor Muminov",
   "private": true,
   "license": "commercial",
-  "contributors": [
-    {
-      "name": "Sardor Muminov",
-      "email": "smuminov@gmail.com"
-    },
-    {
-      "name": "Hikmat Abdullayev"
-    },
-    {
-      "name": "Ulugbek Muslimov"
-    },
-    {
-      "name": "Miradham Kamilov"
-    }
-  ],
-  "scripts": {
-    "start": "DEBUG=* node server.js"
-  },
   "dependencies": {
     "body-parser": "^1.14.2",
     "express": "^4.13.3",
     "js-yaml": "^3.4.6",
-    "lazy.js": "^0.4.2",
-    "node-gcm": "^0.13.0",
     "pg": "^4.4.3",
     "pg-hstore": "^2.3.2",
     "pg-native": "^1.10.0",
@@ -41,19 +21,8 @@
     "voditeli_tashkenta",
     "voditeli-tashkenta",
     "vt",
-    "vt-chat",
-    "vt-chat-server"
+    "vt-api",
+    "vt-api-server"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://bitbucket.org/driversuz/vt-chat-server.git"
-  },
-  "bugs": {
-    "url": "https://bitbucket.org/driversuz/vt-chat-server/issues/",
-    "email": "bugs@drivers.uz"
-  },
-  "homepage": "http://www.drivers.uz",
-  "engines": {
-    "node": ">=5.1.2"
-  }
+  "homepage": "http://www.drivers.uz"
 }
