@@ -6,7 +6,7 @@ var signupUser = module.exports = function(client, username, phone_number, gcm_t
   client.query(insertUserQuery, [username, phone_number, gcm_token, device_type], function(err, result) {
 
     if(err) {
-      logger.error("WAS ATTEMPTING TO INSERT USER", err);
+      callback({ status: 'fail', detail: err });
     }
 
     logger.debug('Inserting user inside signup api ...');
@@ -14,10 +14,9 @@ var signupUser = module.exports = function(client, username, phone_number, gcm_t
     client.query(getTokenQuery, [phone_number], function(err, result) {
 
       if(err) {
-        logger.error("WAS ATTEMPTING TO GET TOKEN OF USER", err);
+        callback({ status: 'fail', detail: err });
       }
 
-      logger.debug('Getting token inside signup api ...');
       logger.debug('Got token', result.rows[0], 'from db');
       callback(result.rows[0]);
 

@@ -95,7 +95,7 @@ router.post('/signup', function(req, res) {
     signupUser(client, username, phone_number, gcm_token, device_type, logger, function(resp) {
       logger.debug('Got response from API', resp);
       logger.info('User', username, 'signed up');
-      logger.info('Token', resp.token);
+      logger.info('Resp', resp);
       done();
       return res.json(resp);
     });
