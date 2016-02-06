@@ -48,6 +48,8 @@ var roomList = require('./api/roomlist');
 var topicList = require('./api/topiclist');
 var topicMembers = require('./api/topicmembers');
 var topicCreate = require('./api/topiccreate');
+var topicSubscribe = require('./api/topicsubscribe');
+var topicUnsubscribe = require('./api/topicunsubscribe');
 var messageHistory = require('./api/messagehistory');
 var messageHistoryUp = require('./api/messagehistoryup');
 var messageCount = require('./api/messagecount');
@@ -212,7 +214,7 @@ router.post('/rooms/:room_id/topics', function(req, res) {
     }
 
     // send topic list
-    topicList(client, room_id, user_id, logger, function(topiclist){
+    topicList(client, room_id, logger, function(topiclist){
       logger.debug('Sending data ' + JSON.stringify(topiclist));
       done();
       return res.json({ status: 'ok', data: topiclist });
@@ -348,6 +350,67 @@ router.post('/rooms/:room_id/topics/:topic_id/count', function(req, res) {
 
   });
 });
+
+// topic subscribe api
+// TODO: check token before proceeding !!!
+router.post('/rooms/:room_id/topics/:topic_id/subscribe', function(req, res) {
+
+  var user_id = req.body.user_id;
+  var room_id = req.params.room_id;
+  var topic_id = req.params.topic_id;
+
+  logger.debug('User', user_id, 'asks to subscribe for topic', topic_id, 'in room', room_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    // send topic create result to user
+    topicSubscribe(client, user_id, topic_id, logger, function(resp){
+
+      logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
+
+    });
+
+  });
+});
+
+// topic unsubscribe api
+// TODO: check token before proceeding !!!
+router.post('/rooms/:room_id/topics/:topic_id/unsubscribe', function(req, res) {
+
+  var user_id = req.body.user_id;
+  var room_id = req.params.room_id;
+  var topic_id = req.params.topic_id;
+
+  logger.debug('User', user_id, 'asks to unsubscribe from topic', topic_id, 'in room', room_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    // send topic create result to user
+    topicUnsubscribe(client, user_id, topic_id, logger, function(resp){
+
+      logger.debug('Sending ->', resp);
+      done();
+      return res.json(resp);
+
+    });
+
+  });
+});
+
 // status page
 // TODO: check token before proceeding !!!
 router.get('/status', function(req, res) {
