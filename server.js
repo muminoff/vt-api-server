@@ -214,7 +214,7 @@ router.post('/rooms/:room_id/topics', function(req, res) {
     }
 
     // send topic list
-    topicList(client, room_id, logger, function(topiclist){
+    topicList(client, room_id, user_id, logger, function(topiclist){
       logger.debug('Sending data ' + JSON.stringify(topiclist));
       done();
       return res.json({ status: 'ok', data: topiclist });
