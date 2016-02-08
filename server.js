@@ -275,8 +275,7 @@ router.post('/rooms/:room_id/topics/:topic_id/history', function(req, res) {
       return res.status(500).json({ status: 'fail', data: err });
     }
 
-    // send topic create result to user
-    messageHistory(client, user_id, topic_id, from, size, logger, function(resp){
+    messageHistory(client, topic_id, from, size, logger, function(resp){
 
       logger.debug('Sending ->', resp);
       done();
@@ -307,8 +306,7 @@ router.post('/rooms/:room_id/topics/:topic_id/history_up', function(req, res) {
       return res.status(500).json({ status: 'fail', data: err });
     }
 
-    // send topic create result to user
-    messageHistoryUp(client, user_id, topic_id, from, size, logger, function(resp){
+    messageHistoryUp(client, topic_id, from, size, logger, function(resp){
 
       logger.debug('Sending ->', resp);
       done();
@@ -339,8 +337,7 @@ router.post('/rooms/:room_id/topics/:topic_id/count', function(req, res) {
       return res.status(500).json({ status: 'fail', data: err });
     }
 
-    // send topic create result to user
-    messageCount(client, user_id, topic_id, from, logger, function(resp){
+    messageCount(client, topic_id, from, logger, function(resp){
 
       logger.debug('Sending ->', resp);
       done();
@@ -405,6 +402,64 @@ router.post('/rooms/:room_id/topics/:topic_id/unsubscribe', function(req, res) {
       logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
+
+    });
+
+  });
+});
+
+// topic close api
+// TODO: check token before proceeding !!!
+router.post('/rooms/:room_id/topics/:topic_id/close', function(req, res) {
+
+  var user_id = req.body.user_id;
+  var room_id = req.params.room_id;
+  var topic_id = req.params.topic_id;
+
+  logger.debug('User', user_id, 'asks to close topic', topic_id, 'in room', room_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    topicClose(client, user_id, topic_id, logger, function(resp){
+
+      logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
+
+    });
+
+  });
+});
+
+// topic open api
+// TODO: check token before proceeding !!!
+router.post('/rooms/:room_id/topics/:topic_id/open', function(req, res) {
+
+  var user_id = req.body.user_id;
+  var room_id = req.params.room_id;
+  var topic_id = req.params.topic_id;
+
+  logger.debug('User', user_id, 'asks to open topic', topic_id, 'in room', room_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    topicOpen(client, user_id, topic_id, logger, function(resp){
+
+      logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
 
     });
 

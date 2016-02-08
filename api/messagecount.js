@@ -1,11 +1,8 @@
-var messageCountQuery = 'select count(id)::int8 as count from messages where $1 in (select user_id from subscribers where topic_id=$2) and topic_id=$2 and id >= $3';
+var messageCountQuery = 'select count(id)::int8 as count from messages where topic_id=$1 and id >= $2';
 
-var messageCount = module.exports = function(client, user_id, topic_id, from, logger, callback) {
+var messageCount = module.exports = function(client, topic_id, from, logger, callback) {
 
-  logger.debug('User ID inside api ->', user_id);
-
-  // topic create
-  client.query(messageCountQuery, [user_id, topic_id, from], function(err, result) {
+  client.query(messageCountQuery, [topic_id, from], function(err, result) {
 
     if(err) {
       logger.error(err);
