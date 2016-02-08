@@ -1,4 +1,4 @@
-var topicOpenQuery = "UPDATE topics SET close=false WHERE owner=$1 AND id=$2";
+var topicOpenQuery = "UPDATE topics SET closed=false WHERE owner=$1 AND id=$2";
 
 var topicOpen = module.exports = function(client, user_id, topic_id, logger, callback) {
 
