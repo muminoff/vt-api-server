@@ -1,4 +1,4 @@
-var topicDeleteQuery = "UPDATE topics SET archived=true WHERE id=$2 AND $2 IN (SELECT id FROM users WHERE roles ->> 'admin' = 'true')";
+var topicDeleteQuery = "UPDATE topics SET archived=true WHERE id=$2 AND $1 IN (SELECT id FROM users WHERE roles ->> 'admin' = 'true')";
 
 var topicDelete = module.exports = function(client, user_id, topic_id, logger, callback) {
 

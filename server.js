@@ -43,13 +43,16 @@ app.use(bodyParser.json());
 
 // api import
 var signupUser = require('./api/signup');
+var getToken = require('./api/gettoken');
 var checkUsername = require('./api/checkusername');
+var checkPhonenumber = require('./api/checkphonenumber');
 var roomList = require('./api/roomlist');
 var topicList = require('./api/topiclist');
 var topicMembers = require('./api/topicmembers');
 var topicCreate = require('./api/topiccreate');
 var topicClose = require('./api/topicclose');
 var topicOpen = require('./api/topicopen');
+var topicDelete = require('./api/topicdelete');
 var topicSubscribe = require('./api/topicsubscribe');
 var topicUnsubscribe = require('./api/topicunsubscribe');
 var messageHistory = require('./api/messagehistory');
@@ -108,6 +111,41 @@ router.post('/signup', function(req, res) {
 
 });
 
+// get token api
+router.post('/get_token', function(req, res) {
+
+  var phone_number = req.body.phone_number;
+
+  logger.debug('phone_number', phone_number);
+
+  if(!phone_number) {
+    return res.json({ status: 'fail', detail: 'phone_number not given' });
+  }
+
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    logger.debug('headers --->', req.headers);
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    logger.debug('User', ip, 'asks to get token for', phone_number);
+
+    getToken(client, phone_number, logger, function(resp) {
+      done();
+      logger.debug('Got response from API', resp);
+      return res.json(resp);
+    });
+  
+  });
+
+});
+
 // check username api
 router.post('/check_username', function(req, res) {
 
@@ -137,6 +175,42 @@ router.post('/check_username', function(req, res) {
       done();
       logger.debug('Got response from API', resp);
       logger.info('Username', username, (resp.exists) ? ('busy'): ('available'));
+      return res.json(resp);
+    });
+  
+  });
+
+});
+
+// check number api
+router.post('/check_phone_number', function(req, res) {
+
+  var phone_number = req.body.phone_number;
+
+  logger.debug('phone_number', phone_number);
+
+  if(!phone_number) {
+    return res.json({ status: 'fail', detail: 'phone_number not given' });
+  }
+
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    logger.debug('headers --->', req.headers);
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    logger.debug('User', ip, 'checks phone_number availability for', phone_number);
+
+    checkPhonenumber(client, phone_number, logger, function(resp) {
+      done();
+      logger.debug('Got response from API', resp);
+      logger.info('Phone number', phone_number, (resp.exists) ? ('busy'): ('available'));
       return res.json(resp);
     });
   
@@ -458,6 +532,35 @@ router.post('/rooms/:room_id/topics/:topic_id/open', function(req, res) {
     }
 
     topicOpen(client, user_id, topic_id, logger, function(resp){
+
+      logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
+
+    });
+
+  });
+});
+
+// topic delete api
+// TODO: check token before proceeding !!!
+router.post('/rooms/:room_id/topics/:topic_id/delete', function(req, res) {
+
+  var user_id = req.body.user_id;
+  var room_id = req.params.room_id;
+  var topic_id = req.params.topic_id;
+
+  logger.debug('User', user_id, 'asks to delete topic', topic_id, 'in room', room_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    topicDelete(client, user_id, topic_id, logger, function(resp){
 
       logger.debug('Sending ->', resp);
       done();
