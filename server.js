@@ -187,7 +187,7 @@ router.post('/check_phone_number', function(req, res) {
 
   var phone_number = req.body.phone_number;
 
-  logger.debug('phone_number', phone_number);
+  logger.debug('phone_number', phone_number, typeof(phone_number), phone_number.length);
 
   if(!phone_number) {
     return res.json({ status: 'fail', detail: 'phone_number not given' });

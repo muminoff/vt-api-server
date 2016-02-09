@@ -1,4 +1,4 @@
-var checkPhonenumberQuery = 'select exists(select id from users where phone_number=$1)';
+var checkPhonenumberQuery = "select exists(select id from users where phone_number=btrim($1, ' '))";
 
 var checkPhonenumber = module.exports = function(client, phone_number, logger, callback) {
 
