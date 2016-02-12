@@ -46,6 +46,8 @@ var signupUser = require('./api/signup');
 var getToken = require('./api/gettoken');
 var checkUsername = require('./api/checkusername');
 var checkPhonenumber = require('./api/checkphonenumber');
+var updateUsername = require('./api/updateusername');
+var updateProfile = require('./api/updateuserprofile');
 var roomList = require('./api/roomlist');
 var topicList = require('./api/topiclist');
 var topicMembers = require('./api/topicmembers');
@@ -115,8 +117,10 @@ router.post('/signup', function(req, res) {
 router.post('/get_token', function(req, res) {
 
   var phone_number = req.body.phone_number;
+  var gcm_token = req.body.gcm_token;
 
   logger.debug('phone_number', phone_number);
+  logger.debug('gcm_token', gcm_token);
 
   if(!phone_number) {
     return res.json({ status: 'fail', detail: 'phone_number not given' });
@@ -136,7 +140,7 @@ router.post('/get_token', function(req, res) {
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     logger.debug('User', ip, 'asks to get token for', phone_number);
 
-    getToken(client, phone_number, logger, function(resp) {
+    getToken(client, phone_number, gcm_token, logger, function(resp) {
       done();
       logger.debug('Got response from API', resp);
       return res.json(resp);
@@ -220,9 +224,10 @@ router.post('/check_phone_number', function(req, res) {
 
 // topic members api
 // TODO: check token before proceeding !!!
-router.post('/members', function(req, res) {
+router.get('/rooms/:room_id/topics/:topic_id/members', function(req, res) {
 
-  var topic_id = req.body.topic_id;
+  var room_id = req.params.room_id;
+  var topic_id = req.params.topic_id;
 
   logger.debug('topic_id', topic_id);
 
@@ -561,6 +566,62 @@ router.post('/rooms/:room_id/topics/:topic_id/delete', function(req, res) {
     }
 
     topicDelete(client, user_id, topic_id, logger, function(resp){
+
+      logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
+
+    });
+
+  });
+});
+
+// update username api
+// TODO: check token before proceeding !!!
+router.post('/update_username', function(req, res) {
+
+  var user_id = req.body.user_id;
+  var username = req.body.username;
+
+  logger.debug('User', user_id, 'asks to update username for', username);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    updateUsername(client, user_id, username, logger, function(resp){
+
+      logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
+
+    });
+
+  });
+});
+
+// update profile api
+// TODO: check token before proceeding !!!
+router.post('/update_profile', function(req, res) {
+
+  var user_id = req.body.user_id;
+  var profile = req.body.profile;
+
+  logger.debug('User', user_id, 'asks to update profile');
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    updateProfile(client, user_id, profile, logger, function(resp){
 
       logger.debug('Sending ->', resp);
       done();
