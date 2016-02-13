@@ -18,6 +18,8 @@ if(config.redis.auth)redisClient.auth(config.redis.auth);
 
 var sendSMS = module.exports = function(phone_number, verification_code, logger, callback) {
 
+  if(phone_number.startsWith('+') === false)phone_number='+' + phone_number;
+
   redisClient.get(phone_number, function(err, num) {
     if(!num) {
 
