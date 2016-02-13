@@ -18,8 +18,8 @@ if(config.redis.auth)redisClient.auth(config.redis.auth);
 
 var sendSMS = module.exports = function(phone_number, verification_code, logger, callback) {
 
-  redisClient.get(phone_number, function(err, verification_code) {
-    if(!verification_code) {
+  redisClient.get(phone_number, function(err, num) {
+    if(!num) {
 
       logger.debug('Verification code not set');
 
