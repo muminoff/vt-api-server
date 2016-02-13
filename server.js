@@ -14,9 +14,9 @@ var logger = require('./logger');
 var config = require('./utils/config');
 
 // turn on the radar to catch errors
-var raven = require('raven');
-var radar = new raven.Client('http://57e96643eab8444db0feadec48cec51b:4690fde3a81f40da84c4775581331da2@sentry.drivers.uz/3');
-radar.patchGlobal();
+// var raven = require('raven');
+// var radar = new raven.Client('http://57e96643eab8444db0feadec48cec51b:4690fde3a81f40da84c4775581331da2@sentry.drivers.uz/3');
+// radar.patchGlobal();
 
 // set log level from config
 logger.level = config.log_level;
