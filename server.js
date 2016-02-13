@@ -60,6 +60,7 @@ var topicUnsubscribe = require('./api/topicunsubscribe');
 var messageHistory = require('./api/messagehistory');
 var messageHistoryUp = require('./api/messagehistoryup');
 var messageCount = require('./api/messagecount');
+var sendSMS = require('./api/sendsms');
 
 // rest route
 var router = express.Router();
@@ -630,6 +631,22 @@ router.post('/update_profile', function(req, res) {
     });
 
   });
+});
+
+// send sms api
+// TODO: check token before proceeding !!!
+router.post('/send_sms', function(req, res) {
+
+  var phone_number = req.body.phone_number;
+  var verification_code = req.body.verification_code;
+
+  logger.debug('Phone', phone_number, 'asks to send sms with verification code', verification_code);
+
+  sendSMS(phone_number, verification_code, logger, function(resp) {
+    logger.debug('Got response from SMS API', resp);
+    return res.status(200).json(resp);
+  });
+
 });
 
 // status page
