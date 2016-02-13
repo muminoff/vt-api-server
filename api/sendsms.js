@@ -2,8 +2,6 @@ var twilio = require('twilio');
 var redis = require('redis');
 var config = require('../utils/config');
 
-logger.level = config.log_level;
-
 var twilioClient = new twilio.RestClient(config.twilio_sid, config.twilio_token);
 var redisClient = redis.createClient({
   host: config.redis.host,
