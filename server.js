@@ -48,6 +48,7 @@ var checkUsername = require('./api/checkusername');
 var checkPhonenumber = require('./api/checkphonenumber');
 var updateUsername = require('./api/updateusername');
 var updateProfile = require('./api/updateuserprofile');
+var updateAvatar = require('./api/updateavatar');
 var roomList = require('./api/roomlist');
 var topicList = require('./api/topiclist');
 var topicMembers = require('./api/topicmembers');
@@ -636,12 +637,12 @@ router.post('/update_username', function(req, res) {
 
 // update profile api
 // TODO: check token before proceeding !!!
-router.post('/update_profile', function(req, res) {
+router.post('/update_avatar', function(req, res) {
 
   var user_id = req.body.user_id;
-  var profile = req.body.profile;
+  var avatar_url = req.body.avatar_url;
 
-  logger.debug('User', user_id, 'asks to update profile');
+  logger.debug('User', user_id, 'asks to update avatar');
 
   pg.connect(pgConnectionString, function(err, client, done) {
 
@@ -651,7 +652,7 @@ router.post('/update_profile', function(req, res) {
       return res.status(500).json({ status: 'fail', data: err });
     }
 
-    updateProfile(client, user_id, profile, logger, function(resp){
+    updateAvatar(client, user_id, avatar_url, logger, function(resp){
 
       logger.debug('Sending ->', resp);
       done();
