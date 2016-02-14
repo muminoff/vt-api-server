@@ -60,6 +60,7 @@ var topicUnsubscribe = require('./api/topicunsubscribe');
 var messageHistory = require('./api/messagehistory');
 var messageHistoryUp = require('./api/messagehistoryup');
 var messageCount = require('./api/messagecount');
+var messageDelete = require('./api/messagedelete');
 var sendSMS = require('./api/sendsms');
 
 // rest route
@@ -420,6 +421,34 @@ router.post('/rooms/:room_id/topics/:topic_id/count', function(req, res) {
     }
 
     messageCount(client, topic_id, from, logger, function(resp){
+
+      logger.debug('Sending ->', resp);
+      done();
+      return res.json(resp);
+
+    });
+
+  });
+});
+
+// message delete api
+// TODO: check token before proceeding !!!
+router.post('/messages/:message_id/delete', function(req, res) {
+
+  var message_id = req.params.message_id;
+  var user_id = req.body.user_id;
+
+  logger.debug('User', user_id, 'asks to delete message', message_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    messageDelete(client, message_id, user_id, logger, function(resp){
 
       logger.debug('Sending ->', resp);
       done();
