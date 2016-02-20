@@ -44,6 +44,7 @@ app.use(bodyParser.json());
 // api import
 var signupUser = require('./api/signup');
 var getToken = require('./api/gettoken');
+var getUserInfo = require('./api/getuserinfo');
 var checkUsername = require('./api/checkusername');
 var checkPhonenumber = require('./api/checkphonenumber');
 var updateUsername = require('./api/updateusername');
@@ -144,6 +145,41 @@ router.post('/get_token', function(req, res) {
     logger.debug('User', ip, 'asks to get token for', phone_number);
 
     getToken(client, phone_number, gcm_token, logger, function(resp) {
+      done();
+      logger.debug('Got response from API', resp);
+      return res.json(resp);
+    });
+  
+  });
+
+});
+
+// get user info api
+router.post('/user_info', function(req, res) {
+
+  var user_id = req.body.user_id;
+
+  logger.debug('user_id', user_id);
+
+  if(!user_id) {
+    return res.json({ status: 'fail', detail: 'user_id not given' });
+  }
+
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    logger.debug('headers --->', req.headers);
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    logger.debug('User', ip, 'asks to get user info for', user_id);
+
+    getUserInfo(client, user_id, logger, function(resp) {
       done();
       logger.debug('Got response from API', resp);
       return res.json(resp);
