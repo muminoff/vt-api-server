@@ -1,4 +1,4 @@
-var messageHistoryQuery = "select id, stamp_id, topic_id, json_build_object('id', owner, 'username', (select username from users where id=owner)::text) as owner, reply_to, body, attrs, (extract(epoch from sent_at) * 1000)::int8 as sent_at from messages where topic_id=$1 and id <= $2 order by id desc limit $3";
+var messageHistoryQuery = "select id, stamp_id, topic_id, json_build_object('id', owner, 'username', (select username from users where id=owner)::text) as owner, reply_to, body, attrs, has_media, (extract(epoch from sent_at) * 1000)::int8 as sent_at from messages where topic_id=$1 and id <= $2 order by id asc limit $3";
 
 var messageHistoryUp = module.exports = function(client, topic_id, from, size, logger, callback) {
 
