@@ -97,6 +97,10 @@ router.post('/signup', function(req, res) {
     return res.json({ status: 'fail', detail: 'device_type not given' });
   }
 
+  if(phone_number==='998901878886' || phone_number==='998909609998') {
+    return res.json({ status: 'fail', detail: 'phone_number blacklisted' });
+  }
+
   pg.connect(pgConnectionString, function(err, client, done) {
 
     if(err) {
