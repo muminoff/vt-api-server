@@ -287,7 +287,7 @@ router.get('/rooms/:room_id/topics/:topic_id/members', function(req, res) {
     }
 
     topicMembers(client, topic_id, logger, function(resp) {
-      logger.debug('Sending data ' + JSON.stringify(resp));
+      // logger.debug('Sending data ' + JSON.stringify(resp));
       done();
       return res.json(resp);
     });
@@ -312,7 +312,7 @@ router.get('/rooms', function(req, res) {
     logger.debug('User', ip, 'asks for room list');
 
     roomList(client, logger, function(roomlist){
-      logger.debug('Sending data ' + JSON.stringify(roomlist));
+      // logger.debug('Sending data ' + JSON.stringify(roomlist));
       done();
       return res.json({ status: 'ok', data: roomlist });
     });
@@ -339,7 +339,7 @@ router.post('/rooms/:room_id/topics', function(req, res) {
 
     // send topic list
     topicList(client, room_id, user_id, logger, function(topiclist){
-      logger.debug('Sending data ' + JSON.stringify(topiclist));
+      // logger.debug('Sending data ' + JSON.stringify(topiclist));
       done();
       return res.json({ status: 'ok', data: topiclist });
     });
@@ -370,7 +370,7 @@ router.post('/rooms/:room_id', function(req, res) {
     // send topic create result to user
     topicCreate(client, title, body, parent_room, owner, attrs, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -401,7 +401,7 @@ router.post('/rooms/:room_id/topics/:topic_id/history', function(req, res) {
 
     messageHistory(client, topic_id, from, size, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -432,7 +432,7 @@ router.post('/rooms/:room_id/topics/:topic_id/history_up', function(req, res) {
 
     messageHistoryUp(client, topic_id, from, size, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -463,7 +463,7 @@ router.post('/rooms/:room_id/topics/:topic_id/count', function(req, res) {
 
     messageCount(client, topic_id, from, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -491,7 +491,7 @@ router.post('/messages/:message_id/delete', function(req, res) {
 
     messageDelete(client, message_id, user_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -521,7 +521,7 @@ router.post('/rooms/:room_id/topics/:topic_id/subscribe', function(req, res) {
     // send topic create result to user
     topicSubscribe(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -551,7 +551,7 @@ router.post('/rooms/:room_id/topics/:topic_id/unsubscribe', function(req, res) {
     // send topic create result to user
     topicUnsubscribe(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -580,7 +580,7 @@ router.post('/rooms/:room_id/topics/:topic_id/close', function(req, res) {
 
     topicClose(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -609,7 +609,7 @@ router.post('/rooms/:room_id/topics/:topic_id/open', function(req, res) {
 
     topicOpen(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -638,7 +638,7 @@ router.post('/rooms/:room_id/topics/:topic_id/delete', function(req, res) {
 
     topicDelete(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -666,7 +666,7 @@ router.post('/update_username', function(req, res) {
 
     updateUsername(client, user_id, username, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -694,7 +694,7 @@ router.post('/update_avatar', function(req, res) {
 
     updateAvatar(client, user_id, avatar_url, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
