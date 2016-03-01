@@ -7,8 +7,9 @@ var topicMembers = module.exports = function(client, topic_id, logger, callback)
     if(err) {
       logger.error(err);
     }
-
+    
     return callback(result.rows);
+
   });
 
 }

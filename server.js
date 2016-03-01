@@ -13,11 +13,6 @@ var __ = require('lazy.js');
 var logger = require('./logger');
 var config = require('./utils/config');
 
-// turn on the radar to catch errors
-// var raven = require('raven');
-// var radar = new raven.Client('http://57e96643eab8444db0feadec48cec51b:4690fde3a81f40da84c4775581331da2@sentry.drivers.uz/3');
-// radar.patchGlobal();
-
 // set log level from config
 logger.level = config.log_level;
 
@@ -287,7 +282,7 @@ router.get('/rooms/:room_id/topics/:topic_id/members', function(req, res) {
     }
 
     topicMembers(client, topic_id, logger, function(resp) {
-      // logger.debug('Sending data ' + JSON.stringify(resp));
+      // logger.info('Sending data ' + JSON.stringify(resp));
       done();
       return res.json(resp);
     });
