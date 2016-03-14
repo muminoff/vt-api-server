@@ -1,4 +1,4 @@
-var messageCountQuery = 'select count(id)::int8 as count from messages where topic_id=$1 and id >= $2';
+var messageCountQuery = "SELECT COUNT(id)::int8 AS count FROM messages WHERE topic_id=$1 AND id >= $2 AND (messages.attrs ->> 'robot_message') IS NULL";
 
 var messageCount = module.exports = function(client, topic_id, from, logger, callback) {
 
