@@ -45,6 +45,7 @@ var checkPhonenumber = require('./api/checkphonenumber');
 var updateUsername = require('./api/updateusername');
 var updateProfile = require('./api/updateuserprofile');
 var updateAvatar = require('./api/updateavatar');
+var banUser = require('./api/banuser');
 var roomList = require('./api/roomlist');
 var topicList = require('./api/topiclist');
 var topicMembers = require('./api/topicmembers');
@@ -334,7 +335,7 @@ router.post('/rooms/:room_id/topics', function(req, res) {
 
     // send topic list
     topicList(client, room_id, user_id, logger, function(topiclist){
-      // logger.debug('Sending data ' + JSON.stringify(topiclist));
+      logger.debug('Sending data ' + JSON.stringify(topiclist));
       done();
       return res.json({ status: 'ok', data: topiclist });
     });
@@ -688,6 +689,33 @@ router.post('/update_avatar', function(req, res) {
     }
 
     updateAvatar(client, user_id, avatar_url, logger, function(resp){
+
+      // logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
+
+    });
+
+  });
+});
+
+// ban user api
+// TODO: check token before proceeding !!!
+router.post('/ban_user', function(req, res) {
+
+  var user_id = req.body.user_id;
+
+  logger.debug('User asks to ban user', user_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    banUser(client, user_id, logger, function(resp){
 
       // logger.debug('Sending ->', resp);
       done();
