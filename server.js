@@ -46,6 +46,7 @@ var updateUsername = require('./api/updateusername');
 var updateProfile = require('./api/updateuserprofile');
 var updateAvatar = require('./api/updateavatar');
 var banUser = require('./api/banuser');
+var unbanUser = require('./api/unbanuser');
 var roomList = require('./api/roomlist');
 var topicList = require('./api/topiclist');
 var topicMembers = require('./api/topicmembers');
@@ -716,6 +717,33 @@ router.post('/ban_user', function(req, res) {
     }
 
     banUser(client, user_id, logger, function(resp){
+
+      // logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
+
+    });
+
+  });
+});
+
+// unban user api
+// TODO: check token before proceeding !!!
+router.post('/unban_user', function(req, res) {
+
+  var user_id = req.body.user_id;
+
+  logger.debug('User asks to unban user', user_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    unbanUser(client, user_id, logger, function(resp){
 
       // logger.debug('Sending ->', resp);
       done();
