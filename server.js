@@ -13,11 +13,6 @@ var __ = require('lazy.js');
 var logger = require('./logger');
 var config = require('./utils/config');
 
-// turn on the radar to catch errors
-// var raven = require('raven');
-// var radar = new raven.Client('http://57e96643eab8444db0feadec48cec51b:4690fde3a81f40da84c4775581331da2@sentry.drivers.uz/3');
-// radar.patchGlobal();
-
 // set log level from config
 logger.level = config.log_level;
 
@@ -44,10 +39,14 @@ app.use(bodyParser.json());
 // api import
 var signupUser = require('./api/signup');
 var getToken = require('./api/gettoken');
+var getUserInfo = require('./api/getuserinfo');
 var checkUsername = require('./api/checkusername');
 var checkPhonenumber = require('./api/checkphonenumber');
 var updateUsername = require('./api/updateusername');
 var updateProfile = require('./api/updateuserprofile');
+var updateAvatar = require('./api/updateavatar');
+var banUser = require('./api/banuser');
+var unbanUser = require('./api/unbanuser');
 var roomList = require('./api/roomlist');
 var topicList = require('./api/topiclist');
 var topicMembers = require('./api/topicmembers');
@@ -60,6 +59,7 @@ var topicUnsubscribe = require('./api/topicunsubscribe');
 var messageHistory = require('./api/messagehistory');
 var messageHistoryUp = require('./api/messagehistoryup');
 var messageCount = require('./api/messagecount');
+var messageDelete = require('./api/messagedelete');
 var sendSMS = require('./api/sendsms');
 
 // rest route
@@ -92,6 +92,10 @@ router.post('/signup', function(req, res) {
 
   if(!device_type) {
     return res.json({ status: 'fail', detail: 'device_type not given' });
+  }
+
+  if(phone_number==='998901878886' || phone_number==='998909609998') {
+    return res.json({ status: 'fail', detail: 'phone_number blacklisted' });
   }
 
   pg.connect(pgConnectionString, function(err, client, done) {
@@ -142,6 +146,41 @@ router.post('/get_token', function(req, res) {
     logger.debug('User', ip, 'asks to get token for', phone_number);
 
     getToken(client, phone_number, gcm_token, logger, function(resp) {
+      done();
+      logger.debug('Got response from API', resp);
+      return res.json(resp);
+    });
+  
+  });
+
+});
+
+// get user info api
+router.post('/user_info', function(req, res) {
+
+  var user_id = req.body.user_id;
+
+  logger.debug('user_id', user_id);
+
+  if(!user_id) {
+    return res.json({ status: 'fail', detail: 'user_id not given' });
+  }
+
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    logger.debug('headers --->', req.headers);
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    logger.debug('User', ip, 'asks to get user info for', user_id);
+
+    getUserInfo(client, user_id, logger, function(resp) {
       done();
       logger.debug('Got response from API', resp);
       return res.json(resp);
@@ -245,7 +284,7 @@ router.get('/rooms/:room_id/topics/:topic_id/members', function(req, res) {
     }
 
     topicMembers(client, topic_id, logger, function(resp) {
-      logger.debug('Sending data ' + JSON.stringify(resp));
+      // logger.info('Sending data ' + JSON.stringify(resp));
       done();
       return res.json(resp);
     });
@@ -270,7 +309,7 @@ router.get('/rooms', function(req, res) {
     logger.debug('User', ip, 'asks for room list');
 
     roomList(client, logger, function(roomlist){
-      logger.debug('Sending data ' + JSON.stringify(roomlist));
+      // logger.debug('Sending data ' + JSON.stringify(roomlist));
       done();
       return res.json({ status: 'ok', data: roomlist });
     });
@@ -328,7 +367,7 @@ router.post('/rooms/:room_id', function(req, res) {
     // send topic create result to user
     topicCreate(client, title, body, parent_room, owner, attrs, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -359,7 +398,7 @@ router.post('/rooms/:room_id/topics/:topic_id/history', function(req, res) {
 
     messageHistory(client, topic_id, from, size, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -390,7 +429,7 @@ router.post('/rooms/:room_id/topics/:topic_id/history_up', function(req, res) {
 
     messageHistoryUp(client, topic_id, from, size, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -421,7 +460,35 @@ router.post('/rooms/:room_id/topics/:topic_id/count', function(req, res) {
 
     messageCount(client, topic_id, from, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
+      done();
+      return res.json(resp);
+
+    });
+
+  });
+});
+
+// message delete api
+// TODO: check token before proceeding !!!
+router.post('/messages/:message_id/delete', function(req, res) {
+
+  var message_id = req.params.message_id;
+  var user_id = req.body.user_id;
+
+  logger.debug('User', user_id, 'asks to delete message', message_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    messageDelete(client, message_id, user_id, logger, function(resp){
+
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -451,7 +518,7 @@ router.post('/rooms/:room_id/topics/:topic_id/subscribe', function(req, res) {
     // send topic create result to user
     topicSubscribe(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -481,7 +548,7 @@ router.post('/rooms/:room_id/topics/:topic_id/unsubscribe', function(req, res) {
     // send topic create result to user
     topicUnsubscribe(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.json(resp);
 
@@ -510,7 +577,7 @@ router.post('/rooms/:room_id/topics/:topic_id/close', function(req, res) {
 
     topicClose(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -539,7 +606,7 @@ router.post('/rooms/:room_id/topics/:topic_id/open', function(req, res) {
 
     topicOpen(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -568,7 +635,7 @@ router.post('/rooms/:room_id/topics/:topic_id/delete', function(req, res) {
 
     topicDelete(client, user_id, topic_id, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -596,7 +663,7 @@ router.post('/update_username', function(req, res) {
 
     updateUsername(client, user_id, username, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 
@@ -607,12 +674,12 @@ router.post('/update_username', function(req, res) {
 
 // update profile api
 // TODO: check token before proceeding !!!
-router.post('/update_profile', function(req, res) {
+router.post('/update_avatar', function(req, res) {
 
   var user_id = req.body.user_id;
-  var profile = req.body.profile;
+  var avatar_url = req.body.avatar_url;
 
-  logger.debug('User', user_id, 'asks to update profile');
+  logger.debug('User', user_id, 'asks to update avatar');
 
   pg.connect(pgConnectionString, function(err, client, done) {
 
@@ -622,9 +689,63 @@ router.post('/update_profile', function(req, res) {
       return res.status(500).json({ status: 'fail', data: err });
     }
 
-    updateProfile(client, user_id, profile, logger, function(resp){
+    updateAvatar(client, user_id, avatar_url, logger, function(resp){
 
-      logger.debug('Sending ->', resp);
+      // logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
+
+    });
+
+  });
+});
+
+// ban user api
+// TODO: check token before proceeding !!!
+router.post('/ban_user', function(req, res) {
+
+  var user_id = req.body.user_id;
+
+  logger.debug('User asks to ban user', user_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    banUser(client, user_id, logger, function(resp){
+
+      // logger.debug('Sending ->', resp);
+      done();
+      return res.status(200).json(resp);
+
+    });
+
+  });
+});
+
+// unban user api
+// TODO: check token before proceeding !!!
+router.post('/unban_user', function(req, res) {
+
+  var user_id = req.body.user_id;
+
+  logger.debug('User asks to unban user', user_id);
+
+  pg.connect(pgConnectionString, function(err, client, done) {
+
+    if(err) {
+      done();
+      logger.error(err);
+      return res.status(500).json({ status: 'fail', data: err });
+    }
+
+    unbanUser(client, user_id, logger, function(resp){
+
+      // logger.debug('Sending ->', resp);
       done();
       return res.status(200).json(resp);
 

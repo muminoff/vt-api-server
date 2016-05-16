@@ -1,8 +1,8 @@
-var updateProfileQuery = "UPDATE users SET profile=$1 WHERE id=$2";
+var updateProfileQuery = "UPDATE users SET profile=$2 WHERE id=$2";
 
-var updateProfile = module.exports = function(client, profile, user_id, logger, callback) {
+var updateProfile = module.exports = function(client, user_id, profile, logger, callback) {
 
-  client.query(updateProfileQuery, [profile, user_id], function(err, result) {
+  client.query(updateProfileQuery, [user_id, profile], function(err, result) {
 
     if(err) {
       logger.error(err);
