@@ -4,18 +4,18 @@
   domain: "api.drivers.uz"
   log_file: "logs/vt.log"
   log_level: "debug" #info, warn, error
-  gcm_api_key: "AIzaSyBBaV6nqZtFaQnKzRNK9i_g-jcBU77ji00"
-  twilio_sid: "ACa6018c07efbf52021216a4e7da3333b5"
-  twilio_token: "8ec3758e976d4d9edb4339a4be64e920"
+  gcm_api_key: "gcm_api_key"
+  twilio_sid: "twilio_sid"
+  twilio_token: "twilio_token"
   postgresql: 
-    host: "vt-db.cgsrhj75wyom.us-west-2.rds.amazonaws.com"
+    host: "db.drivers.uz"
     port: 5432
     user: "vt"
     pass: "vtvtvtvt"
     name: "vt"
     pool_size: 200
   redis: 
-    host: "vt-qm.0rpdlx.0001.usw2.cache.amazonaws.com"
+    host: "qm.drivers.uz"
     port: 6379
     auth:
     db: 0
